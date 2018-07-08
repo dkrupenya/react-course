@@ -1,8 +1,13 @@
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin'); //installed via npm
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+
 module.exports = {
     entry: "./src/index.tsx",
     output: {
         filename: "bundle.js",
-        path: __dirname + "/dist"
+        path: path.join(__dirname, 'dist'),
     },
 
     // Enable sourcemaps for debugging webpack's output.
@@ -12,6 +17,8 @@ module.exports = {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".ts", ".tsx", ".js", ".json"]
     },
+
+    mode: "development",
 
     module: {
         rules: [
@@ -23,12 +30,25 @@ module.exports = {
         ]
     },
 
+    plugins: [
+        new CleanWebpackPlugin(['dist']),
+        new HtmlWebpackPlugin({template: "./index.html"}),
+        new webpack.HotModuleReplacementPlugin({}),
+    ],
+
+    devServer: {
+        compress: false,    // gzip compression
+        contentBase: path.join(__dirname, 'dist'), // serve static files
+        port: 9000,
+        hot: true, // enable HMR
+    }
+
     // When importing a module whose path matches one of the following, just
     // assume a corresponding global variable exists and use that instead.
     // This is important because it allows us to avoid bundling all of our
     // dependencies, which allows browsers to cache those libraries between builds.
-    externals: {
-        "react": "React",
-        "react-dom": "ReactDOM"
-    }
+    // externals: {
+    //     "react": "React",
+    //     "react-dom": "ReactDOM"
+    // }
 };
